@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AI Smart Translator</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="/static/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="app">
+
+<div class="header">
+<h1>🌍 AI Smart Translator</h1>
+<p>Fast • Smart • Modern Translation</p>
+</div>
+
+<div class="card">
+
+<textarea id="text" placeholder="Type something to translate..."></textarea>
+
+<div class="controls">
+<select id="source_lang">
+<option value="auto">Auto Detect</option>
+<option value="en">English</option>
+<option value="ur">Urdu</option>
+<option value="es">Spanish</option>
+<option value="fr">French</option>
+<option value="de">German</option>
+<option value="hi">Hindi</option>
+<option value="ar">Arabic</option>
+</select>
+
+<select id="target_lang">
+<option value="ur">Urdu</option>
+<option value="en">English</option>
+<option value="es">Spanish</option>
+<option value="fr">French</option>
+<option value="de">German</option>
+<option value="hi">Hindi</option>
+<option value="ar">Arabic</option>
+</select>
+</div>
+
+<button class="translate-btn" onclick="translateText()">Translate</button>
+
+<div class="output">
+<p id="output">Your translation will appear here...</p>
+</div>
+
+<div class="actions">
+<button onclick="copyText()">📋 Copy</button>
+<button onclick="speak()">🔊 Speak</button>
+</div>
+
+</div>
+
+</div>
+
+<script>
+async function translateText() {
+    let text = document.getElementById("text").value;
+    let src = document.getElementById("source_lang").value;
+    let dest = document.getElementById("target_lang").value;
+
+    if(text.trim() === ""){
+        alert("Please enter text");
+        return;
+    }
+
+    document.getElementById("output").innerText = "Translating...";
+
+    let res = await fetch("/translate", {
+        method: "POST",
+        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+        body: `text=${text}&source_lang=${src}&target_lang=${dest}`
+    });
+
+    let data = await res.json();
+
+    if(data.translated_text){
+        document.getElementById("output").innerText = data.translated_text;
+    } else {
+        document.getElementById("output").innerText = data.error;
+    }
+}
+
+// ✅ COPY
+function copyText(){
+    let text = document.getElementById("output").innerText;
+    navigator.clipboard.writeText(text);
+    alert("Copied!");
+}
+
+// ✅ 🔥 FIXED SPEAK FUNCTION
+function speak(){
+
+    let text = document.getElementById("output").innerText;
+
+    if(!text || text === "Translation service unavailable"){
+        alert("Nothing to speak");
+        return;
+    }
+
+    let msg = new SpeechSynthesisUtterance(text);
+
+    // 🔥 Load voices properly
+    let voices = speechSynthesis.getVoices();
+
+    // Language detect
+    let lang = document.getElementById("target_lang").value;
+
+    // Try matching voice
+    let selectedVoice = voices.find(v => v.lang.toLowerCase().includes(lang));
+
+    if(selectedVoice){
+        msg.voice = selectedVoice;
+    } else {
+        msg.voice = voices[0]; // fallback
+    }
+
+    msg.rate = 1;
+    msg.pitch = 1;
+
+    speechSynthesis.cancel(); // stop previous audio
+    speechSynthesis.speak(msg);
+}
+
+// 🔥 Important fix (voices load issue)
+speechSynthesis.onvoiceschanged = () => {};
+</script>
