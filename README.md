@@ -1,4 +1,4 @@
-# 🌍 AI Smart Translator (CodeAlpha Task 1)
+## AI Smart Translator (CodeAlpha Task 1)
 
 A modern AI-powered language translation tool built using FastAPI.
 
