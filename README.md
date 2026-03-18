@@ -11,9 +11,10 @@ A modern AI-powered language translation tool built using FastAPI.
 - AJAX-based fast UI
 
 ## Tech Stack
-- FastAPI
-- JavaScript (Fetch API)
-- Bootstrap
+- FastAPI (High-performance backend framework)
+- HTML5 & CSS3 (Responsive UI design)
+- JavaScript (Fetch API for async requests)
+- External APIs (LibreTranslate & Google Translate fallback)
 
 ## Run
 uvicorn main:app --reload
